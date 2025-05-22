@@ -70,6 +70,85 @@ describe('/musicians endpoint', () => {
         expect(response.body.name).toBe("Freddie Mercury"); 
         createdMusicianId = response.body.id;
       });
+
+      // Validation Tests for POST
+      test("POST /musicians returns errors if name is empty", async () => {
+        const response = await request(app)
+          .post("/musicians")
+          .send({ name: "", instrument: "Guitar" });
+    
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ path: "name" }),
+          ])
+        );
+      });
+
+      test("POST /musicians returns errors if instrument is empty", async () => {
+        const response = await request(app)
+          .post("/musicians")
+          .send({ name: "John Doe", instrument: "" });
+    
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ path: "instrument" }),
+          ])
+        );
+      });
+
+      test("POST /musicians returns errors if name is too short", async () => {
+        const response = await request(app)
+          .post("/musicians")
+          .send({ name: "A", instrument: "Guitar" });
+    
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ path: "name" }),
+          ])
+        );
+      });
+
+      test("POST /musicians returns errors if name is too long", async () => {
+        const response = await request(app)
+          .post("/musicians")
+          .send({ name: "This name is way too long to be valid", instrument: "Guitar" });
+    
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ path: "name" }),
+          ])
+        );
+      });
+
+      test("POST /musicians returns errors if instrument is too short", async () => {
+        const response = await request(app)
+          .post("/musicians")
+          .send({ name: "John Doe", instrument: "G" });
+    
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ path: "instrument" }),
+          ])
+        );
+      });
+
+      test("POST /musicians returns errors if instrument is too long", async () => {
+        const response = await request(app)
+          .post("/musicians")
+          .send({ name: "John Doe", instrument: "This instrument name is way too long" });
+    
+        expect(response.statusCode).toBe(400);
+        expect(response.body.error).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ path: "instrument" }),
+          ])
+        );
+      });
   
   // PUT
   test("PUT /musicians/:id updates a musician", async () => {
@@ -79,6 +158,59 @@ describe('/musicians endpoint', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.name).toBe("Freddie M.");
+  });
+
+  // Validation Tests for PUT
+  test("PUT /musicians/:id returns errors if name is empty", async () => {
+    const response = await request(app)
+      .put(`/musicians/${createdMusicianId}`)
+      .send({ name: "", instrument: "Piano" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: "name" }),
+      ])
+    );
+  });
+
+  test("PUT /musicians/:id returns errors if instrument is empty", async () => {
+    const response = await request(app)
+      .put(`/musicians/${createdMusicianId}`)
+      .send({ name: "Freddie M.", instrument: "" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: "instrument" }),
+      ])
+    );
+  });
+
+  test("PUT /musicians/:id returns errors if name length is invalid", async () => {
+    const response = await request(app)
+      .put(`/musicians/${createdMusicianId}`)
+      .send({ name: "A", instrument: "Piano" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: "name" }),
+      ])
+    );
+  });
+
+  test("PUT /musicians/:id returns errors if instrument length is invalid", async () => {
+    const response = await request(app)
+      .put(`/musicians/${createdMusicianId}`)
+      .send({ name: "Freddie M.", instrument: "This instrument name is way too long" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: "instrument" }),
+      ])
+    );
   });
 
   // DELETE 
@@ -92,13 +224,5 @@ describe('/musicians endpoint', () => {
     const response = await request(app).get(`/musicians/${createdMusicianId}`);
     expect(response.statusCode).toBe(404);
   });
-
-
-  
-
   
   });
-  
-
-
-

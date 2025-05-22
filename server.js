@@ -1,8 +1,9 @@
-const app = require("./src/app");
-const { db } = require("./db/connection")
-const port = 3000;
 
-app.listen(port, () => {
-    db.sync();
-    console.log(`Listening at http://localhost:${port}/musicians`)
-})
+const express = require("express");
+const app = express();
+const musiciansRouter = require("./routes/musicians");
+
+app.use(express.json());
+app.use("/musicians", musiciansRouter);
+
+module.exports = app;

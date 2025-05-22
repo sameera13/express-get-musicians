@@ -1,13 +1,16 @@
 // install dependencies
+const request = require("supertest");
+const app = require("./src/app");
+
 const { execSync } = require('child_process');
 execSync('npm install');
 execSync('npm run seed');
 
-const request = require("supertest")
 const { db } = require('./db/connection');
 const { Musician } = require('./models/index')
-const app = require('./src/app');
+
 const {seedMusician} = require("./seedData");
+const { response } = require('express');
 
 describe('/musicians endpoint', () => {
     // Reset DB and seed data before tests run
@@ -67,7 +70,7 @@ describe('/musicians endpoint', () => {
         expect(response.body.name).toBe("Freddie Mercury"); 
         createdMusicianId = response.body.id;
       });
-
+  
   // PUT
   test("PUT /musicians/:id updates a musician", async () => {
     const response = await request(app)
@@ -79,16 +82,23 @@ describe('/musicians endpoint', () => {
   });
 
   // DELETE 
-  test("DELETE /musicians/:id deletes a musician", async () => {
+  test("DELETE /musician/:id deletes a musician", async() =>{
     const response = await request(app).delete(`/musicians/${createdMusicianId}`);
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe("Musician deleted");
-  });
-
+});
   // Confirm deletion
   test("GET /musicians/:id returns 404 for deleted musician", async () => {
     const response = await request(app).get(`/musicians/${createdMusicianId}`);
     expect(response.statusCode).toBe(404);
   });
+
+
+  
+
+  
   });
   
+
+
+

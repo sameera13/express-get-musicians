@@ -2,10 +2,14 @@ const express = require("express");
 const app = express();
 const { Musician } = require("../models/index")
 const { db } = require("../db/connection")
+const musiciansRouter = require("../routes/musicians");
+const bandsRouter = require("../routes/bands");
 
 const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/musicians", musiciansRouter);
+app.use("/bands", bandsRouter);
 //TODO: Create a GET /musicians route to return all musicians 
 //part 1
 app.get("/musicians", async (req, res) => {
